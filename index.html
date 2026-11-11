@@ -11,16 +11,7 @@
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
-          colors: {
-            brand: { 500: '#10b981', 600: '#059669' },
-            card: '#18181b',
-            cardborder: '#27272a'
-          }
-        }
-      }
+      theme: { extend: { fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] }, colors: { brand: { 500: '#10b981' }, card: '#18181b', cardborder: '#27272a' } } }
     }
   </script>
 </head>
@@ -32,20 +23,18 @@
     <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-zinc-900 border border-cardborder rounded-2xl p-6 shadow-2xl">
       <div>
         <div class="flex items-center space-x-3">
-          <span class="inline-block w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="syncPulse" class="inline-block w-3 h-3 rounded-full bg-amber-500 animate-pulse"></span>
           <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Běžecký Hub</h1>
         </div>
         <p class="text-zinc-400 text-sm mt-1">Mise: 10 km pod 45:00 • Ochrana aorty (Zóna 2) & Biomechanika (Achillovka)</p>
       </div>
-      <div class="mt-4 sm:mt-0 flex items-center space-x-2 bg-zinc-800 border border-zinc-700 px-4 py-2 rounded-xl text-xs font-semibold text-zinc-300">
-        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-        <span>Strava Data Synced</span>
+      <div id="syncStatus" class="mt-4 sm:mt-0 flex items-center space-x-2 bg-zinc-800 border border-zinc-700 px-4 py-2 rounded-xl text-xs font-semibold text-amber-300">
+        Načítám data ze Stravy...
       </div>
     </header>
 
     <!-- BĚŽCI GRID -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
       <!-- FILIP KARTA -->
       <div class="bg-zinc-900 border border-cardborder rounded-2xl p-6 space-y-4 shadow-xl">
         <div class="flex justify-between items-start">
@@ -55,196 +44,196 @@
               <h3 class="text-lg font-bold">Filip</h3>
             </div>
           </div>
-          <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800/40">
-            Aktivní trénink
-          </span>
+          <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800/40">Aktivní trénink</span>
         </div>
 
-        <!-- Osobní XP -->
         <div>
           <div class="flex justify-between text-xs font-semibold mb-1">
-            <span class="text-zinc-400">Level 4: Aerobní motor</span>
-            <span class="text-emerald-400 font-bold">420 / 1 000 XP</span>
+            <span class="text-zinc-400" id="levelText">Level: Načítám...</span>
+            <span class="text-emerald-400 font-bold" id="xpText">-- / 1 000 XP</span>
           </div>
           <div class="w-full bg-zinc-800 rounded-full h-3 overflow-hidden border border-zinc-700">
-            <div class="bg-emerald-500 h-full rounded-full transition-all" style="width: 42%;"></div>
+            <div id="xpBar" class="bg-emerald-500 h-full rounded-full transition-all duration-1000" style="width: 0%;"></div>
           </div>
         </div>
 
-        <!-- Zásadní metriky -->
         <div class="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-800 text-center">
           <div class="p-2 bg-zinc-950 rounded-xl border border-zinc-800/80">
-            <span class="text-[10px] text-zinc-500 uppercase font-semibold">Týdenní km</span>
-            <p class="text-base font-bold text-zinc-200">12,1 km</p>
+            <span class="text-[10px] text-zinc-500 uppercase font-semibold">Celkem km</span>
+            <p class="text-base font-bold text-zinc-200" id="totalKm">-- km</p>
           </div>
           <div class="p-2 bg-zinc-950 rounded-xl border border-zinc-800/80">
-            <span class="text-[10px] text-zinc-500 uppercase font-semibold">Průměrný tep</span>
-            <p class="text-base font-bold text-emerald-400">140 bpm</p>
+            <span class="text-[10px] text-zinc-500 uppercase font-semibold">Tep (poslední)</span>
+            <p class="text-base font-bold text-emerald-400" id="latestHr">-- bpm</p>
           </div>
           <div class="p-2 bg-zinc-950 rounded-xl border border-zinc-800/80">
             <span class="text-[10px] text-zinc-500 uppercase font-semibold">Kadence</span>
-            <p class="text-base font-bold text-zinc-200">164 spm</p>
+            <p class="text-base font-bold text-zinc-200" id="latestCadence">-- spm</p>
           </div>
-        </div>
-
-        <div class="p-3 bg-zinc-950/60 rounded-xl border border-zinc-800/60 flex items-start space-x-2 text-xs">
-          <span class="text-amber-400 font-bold">Radar nohy:</span>
-          <span class="text-zinc-400">GCT 279 ms. V kopcích zkrať krok na dětské krůčky, šetři jizvu Achillovky.</span>
         </div>
       </div>
 
-      <!-- PŘIDAT BĚŽCE (Placeholder) -->
+      <!-- PŘIDAT BĚŽCE -->
       <div class="bg-zinc-900/30 border-2 border-dashed border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 hover:border-zinc-600 transition-all cursor-pointer min-h-[280px]">
         <svg class="w-12 h-12 mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
         <span class="font-bold text-lg">Přidat parťáka</span>
-        <span class="text-sm text-center mt-2 max-w-[80%]">Jakmile budeš mít data dalšího běžce z Google Tabulky, odemkne se zde štafetový duel a sdílený cíl.</span>
+        <span class="text-sm text-center mt-2 max-w-[80%]">Až budou data dalšího běžce v tabulce, odemkne se štafetový duel.</span>
       </div>
-
     </div>
 
     <!-- INTERAKTIVNÍ GRAF -->
     <section class="bg-zinc-900 border border-cardborder rounded-2xl p-6 shadow-xl">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
         <div>
-          <h2 class="text-lg font-bold">Statistiky tréninku</h2>
-          <p class="text-zinc-400 text-xs mt-0.5">Vývoj tvé formy v čase</p>
+          <h2 class="text-lg font-bold">Statistiky tréninku (Posledních 10 běhů)</h2>
         </div>
-        
-        <!-- Výběr zobrazení (Dropdown) -->
         <div class="mt-4 sm:mt-0 w-full sm:w-auto">
           <select id="chartSelector" onchange="updateChart()" class="w-full sm:w-auto bg-zinc-950 border border-zinc-700 text-zinc-200 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block p-2.5 outline-none font-semibold">
             <option value="km">Počet kilometrů</option>
-            <option value="runs">Počty běhů týdně</option>
             <option value="xp">Získané XP</option>
             <option value="hr">Průměrný tep</option>
           </select>
         </div>
       </div>
-      
       <div class="h-64 w-full">
         <canvas id="interactiveChart"></canvas>
       </div>
     </section>
 
-    <!-- TRENÉRSKÝ RADAR (COACH INSIGHTS) -->
+    <!-- TRENÉRSKÝ RADAR (AI COACH) -->
     <footer class="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-emerald-900/40 rounded-2xl p-6 shadow-xl flex items-start space-x-4">
       <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20 shrink-0 mt-1">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
       </div>
       <div>
-        <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">Doporučení Coache pro další fázi</h3>
-        <p class="text-zinc-300 text-sm mt-1.5 leading-relaxed">
-          Páteční anaerobní sprinty 5x 1:00 v tempu 3:50 škrtáme kvůli šetření kořene aorty a operované Achillovky. V sobotu nasaď lehký výklus s 4x technickými rovinkami na vyvětrání hlavy. V neděli nás čeká 52 minut čistého aerobního základu – v kopcích zkrať krok na dětské krůčky a udržuj tep pod 145 bpm!
+        <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">Live AI Coach Report (Z posledního běhu)</h3>
+        <p id="coachMessageText" class="text-zinc-300 text-sm mt-1.5 leading-relaxed font-semibold">
+          Čekám na data z analýzy...
         </p>
       </div>
     </footer>
 
   </div>
 
-  <!-- SCRIPT PRO INTERAKTIVNÍ GRAF -->
   <script>
-    // Zástupná (mock) data pro grafy - později sem natáhneme data z Google Sheets
-    const chartDataSets = {
-      km: {
-        label: 'Uběhnuté kilometry',
-        data: [15, 22, 18, 12.1], // Data za jednotlivé týdny
-        borderColor: '#22d3ee', // Cyan
-        backgroundColor: 'rgba(34, 211, 238, 0.1)',
-        unit: ' km'
-      },
-      runs: {
-        label: 'Počet běhů',
-        data: [3, 4, 3, 2],
-        borderColor: '#f59e0b', // Amber
-        backgroundColor: 'rgba(245, 158, 11, 0.1)',
-        unit: 'x'
-      },
-      xp: {
-        label: 'Získané XP',
-        data: [150, 240, 180, 160],
-        borderColor: '#10b981', // Emerald
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-        unit: ' XP'
-      },
-      hr: {
-        label: 'Průměrný tep',
-        data: [145, 142, 138, 141],
-        borderColor: '#ef4444', // Red
-        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-        unit: ' bpm'
-      }
-    };
+    // ==========================================
+    // SEM VLOŽ URL SVÉ WEBOVÉ APLIKACE (Krok 1)
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwhS4riUeIblELFh0AZ-4Prr3YdUGry6fzRuzjUjRlJXUDMMnm_fAQsWVsqxLhgtI7V/exec';
+    // ==========================================
 
-    const ctx = document.getElementById('interactiveChart').getContext('2d');
-    
-    // Inicializace grafu
-    let myChart = new Chart(ctx, {
-      type: 'bar', // Použijeme sloupcový graf (lze změnit na 'line')
-      data: {
-        labels: ['Týden 1', 'Týden 2', 'Týden 3', 'Aktuální týden'],
-        datasets: [{
-          label: chartDataSets['km'].label,
-          data: chartDataSets['km'].data,
-          backgroundColor: chartDataSets['km'].borderColor,
-          borderRadius: 4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-            grid: { color: '#27272a' },
-            ticks: { color: '#a1a1aa' }
-          },
-          x: {
-            grid: { display: false },
-            ticks: { color: '#a1a1aa' }
-          }
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const currentSelection = document.getElementById('chartSelector').value;
-                return context.parsed.y + chartDataSets[currentSelection].unit;
-              }
-            }
-          }
+    let chartDataSets = {};
+    let myChart = null;
+
+    async function fetchData() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        
+        if(data && data.length > 0) {
+          processRunData(data);
+          
+          // Indikátor úspěchu
+          document.getElementById('syncPulse').classList.replace('bg-amber-500', 'bg-emerald-500');
+          const statusEl = document.getElementById('syncStatus');
+          statusEl.classList.replace('text-amber-300', 'text-emerald-400');
+          statusEl.innerHTML = `<svg class="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Live Data`;
         }
+      } catch (error) {
+        console.error("Chyba při načítání dat:", error);
+        document.getElementById('coachMessageText').innerText = "Nepodařilo se připojit k databázi Stravy.";
       }
-    });
+    }
 
-    // Funkce pro přepnutí dat po změně v select boxu
+    function processRunData(data) {
+      // Výpočty
+      let totalXp = 0;
+      let totalKm = 0;
+      
+      data.forEach(run => {
+        totalXp += Number(run['XP']) || 0;
+        totalKm += Number(run['Vzdálenost (km)']) || 0;
+      });
+
+      // Získání posledního běhu
+      const latestRun = data[data.length - 1];
+      
+      // Update UI Karet
+      document.getElementById('totalKm').innerText = totalKm.toFixed(1) + ' km';
+      document.getElementById('latestHr').innerText = latestRun['Prům. Tep'] + ' bpm';
+      document.getElementById('latestCadence').innerText = latestRun['Kadence'] + ' spm';
+      
+      // XP Systém (Level up po každých 1000 XP)
+      let level = Math.floor(totalXp / 1000) + 1;
+      let currentLevelXp = totalXp % 1000;
+      let xpPercent = (currentLevelXp / 1000) * 100;
+      
+      document.getElementById('levelText').innerText = 'Level ' + level + ': Běžecký Základ';
+      document.getElementById('xpText').innerText = currentLevelXp + ' / 1 000 XP';
+      document.getElementById('xpBar').style.width = xpPercent + '%';
+
+      // AI Coach Zpráva z posledního běhu
+      if (latestRun['Coach AI Zpráva']) {
+        document.getElementById('coachMessageText').innerText = `"${latestRun['Coach AI Zpráva']}"`;
+      } else {
+        document.getElementById('coachMessageText').innerText = "AI analýza pro tento běh zatím není k dispozici.";
+      }
+
+      // Příprava dat pro graf (posledních 10 běhů pro přehlednost)
+      const recentRuns = data.slice(-10);
+      const labels = recentRuns.map(r => {
+        let d = new Date(r['Datum']);
+        return d.toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric'});
+      });
+
+      chartDataSets = {
+        km: { label: 'Kilometry', data: recentRuns.map(r => r['Vzdálenost (km)']), borderColor: '#22d3ee', backgroundColor: 'rgba(34, 211, 238, 0.1)', unit: ' km' },
+        xp: { label: 'Získané XP', data: recentRuns.map(r => r['XP']), borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', unit: ' XP' },
+        hr: { label: 'Průměrný tep', data: recentRuns.map(r => r['Prům. Tep']), borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', unit: ' bpm' }
+      };
+
+      initChart(labels);
+    }
+
+    function initChart(labels) {
+      const ctx = document.getElementById('interactiveChart').getContext('2d');
+      myChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: labels, datasets: [{ label: '', data: [], borderRadius: 4 }] },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: { y: { grid: { color: '#27272a' }, ticks: { color: '#a1a1aa' } }, x: { grid: { display: false }, ticks: { color: '#a1a1aa' } } },
+          plugins: { legend: { display: false } }
+        }
+      });
+      updateChart(); // Nahraje výchozí data
+    }
+
     function updateChart() {
-      const selectedValue = document.getElementById('chartSelector').value;
-      const newData = chartDataSets[selectedValue];
+      if(!myChart) return;
+      const sel = document.getElementById('chartSelector').value;
+      const d = chartDataSets[sel];
       
-      // Změna typu grafu - pro tepy dáme čárový, pro ostatní sloupcový
-      myChart.config.type = (selectedValue === 'hr') ? 'line' : 'bar';
+      myChart.config.type = (sel === 'hr') ? 'line' : 'bar';
+      myChart.data.datasets[0].label = d.label;
+      myChart.data.datasets[0].data = d.data;
+      myChart.data.datasets[0].backgroundColor = (sel === 'hr') ? d.backgroundColor : d.borderColor;
+      myChart.data.datasets[0].borderColor = d.borderColor;
+      myChart.data.datasets[0].borderWidth = (sel === 'hr') ? 3 : 0;
+      myChart.data.datasets[0].fill = (sel === 'hr');
+      myChart.data.datasets[0].tension = 0.3;
       
-      // Aktualizace dat a barev
-      myChart.data.datasets[0].label = newData.label;
-      myChart.data.datasets[0].data = newData.data;
-      myChart.data.datasets[0].backgroundColor = (selectedValue === 'hr') ? newData.backgroundColor : newData.borderColor;
-      myChart.data.datasets[0].borderColor = newData.borderColor;
-      myChart.data.datasets[0].borderWidth = (selectedValue === 'hr') ? 3 : 0;
-      myChart.data.datasets[0].fill = (selectedValue === 'hr');
-      myChart.data.datasets[0].tension = 0.3; // Pro zakřivení u čárového grafu
-
-      // Ochrana rozsahu u srdečního tepu, aby graf nezačínal od nuly a byl čitelný
-      if(selectedValue === 'hr') {
+      if(sel === 'hr') {
         myChart.options.scales.y.min = 120;
         myChart.options.scales.y.beginAtZero = false;
       } else {
         myChart.options.scales.y.min = undefined;
         myChart.options.scales.y.beginAtZero = true;
       }
-      
       myChart.update();
     }
+
+    // Spustí stahování po načtení stránky
+    window.onload = fetchData;
   </script>
 </body>
 </html>
