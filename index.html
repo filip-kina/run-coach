@@ -31,7 +31,7 @@
     <!-- HORNÍ GRID: FILIP & HISTORIE -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
-      <!-- Karta Filip -->
+      <!-- Karta Filip (Osobní Stats) -->
       <div class="bg-zinc-900 border border-cardborder rounded-2xl p-6 lg:col-span-1 shadow-xl">
         <h3 class="text-lg font-bold text-emerald-400 mb-4">Hlavní profil: Filip</h3>
         <div class="mb-4">
@@ -55,45 +55,56 @@
         </div>
       </div>
 
-      <!-- Historie -->
+      <!-- Historie (Všichni běžci) -->
       <div class="bg-zinc-900 border border-cardborder rounded-2xl p-6 lg:col-span-2 shadow-xl flex flex-col max-h-[250px]">
-        <h2 class="text-sm font-bold uppercase text-zinc-400 mb-3">Poslední aktivity (Klikni pro detail)</h2>
+        <h2 class="text-sm font-bold uppercase text-zinc-400 mb-3">Poslední aktivity (Všichni běžci)</h2>
         <div id="historyList" class="flex-1 overflow-y-auto space-y-2 pr-2">
            <div class="text-zinc-600 text-sm mt-4 text-center animate-pulse">Načítám...</div>
         </div>
       </div>
     </div>
 
-    <!-- GRAFY -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      
-      <!-- PREDIKCE S PARŤÁKEM -->
-      <section class="bg-zinc-900 border border-cardborder rounded-2xl p-6 shadow-xl">
-        <h2 class="text-lg font-bold text-amber-400 mb-1">📈 Predikce 10 km (Duel)</h2>
-        <p class="text-zinc-400 text-xs mb-4">Srovnání tvé a parťákovy formy vůči cíli 45:00</p>
-        <div class="h-64 w-full"><canvas id="predictionChart"></canvas></div>
-      </section>
-
-      <!-- AGREGACE STATISTIK -->
-      <section class="bg-zinc-900 border border-cardborder rounded-2xl p-6 shadow-xl">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
-          <h2 class="text-lg font-bold">Statistiky a Trendy</h2>
-          <div class="flex gap-2">
-             <select id="metricSelector" onchange="updateMainChart()" class="bg-zinc-950 border border-zinc-700 text-zinc-200 text-xs rounded-lg p-2">
-                <option value="km">Kilometry</option>
-                <option value="xp">Získané XP</option>
-                <option value="hr">Průměrný tep</option>
-             </select>
-             <select id="periodSelector" onchange="updateMainChart()" class="bg-zinc-950 border border-zinc-700 text-zinc-200 text-xs rounded-lg p-2">
-                <option value="day">Po dnech</option>
-                <option value="week">Po týdnech</option>
-                <option value="month">Po měsících</option>
-             </select>
-          </div>
+    <!-- PŘEDPOVĚĎ A ZÁVODNÍ DRÁHA -->
+    <section class="bg-zinc-900 border border-cardborder rounded-2xl p-6 shadow-xl">
+      <div class="mb-6">
+        <h2 class="text-lg font-bold text-amber-400 mb-1">🏁 Závodní dráha (Aktuální forma)</h2>
+        <p class="text-zinc-400 text-xs mb-2">Pozice ukazuje teoretický čas na 10 km z posledního běhu. Cílová páska je 45:00.</p>
+        
+        <!-- CSS Závodní osa -->
+        <div class="relative h-12 bg-zinc-950 rounded-xl border border-zinc-800 overflow-hidden mt-4">
+          <div class="absolute left-0 top-0 bottom-0 w-12 flex items-center justify-center text-[10px] font-bold text-zinc-600 border-r border-zinc-800">Start<br>75'</div>
+          <div class="absolute right-0 top-0 bottom-0 w-12 bg-amber-500/10 border-l-2 border-amber-500 flex items-center justify-center text-[10px] font-bold text-amber-500">CÍL<br>45'</div>
+          <!-- Kontejner pro figurky -->
+          <div id="raceTrackContainer" class="absolute left-12 right-12 top-0 bottom-0"></div>
         </div>
-        <div class="h-64 w-full"><canvas id="mainChart"></canvas></div>
-      </section>
-    </div>
+      </div>
+
+      <!-- Samotný graf křivek -->
+      <div class="pt-4 border-t border-zinc-800">
+        <h2 class="text-sm font-bold text-zinc-300 mb-4">Vývoj predikce v čase (Duel křivek)</h2>
+        <div class="h-64 w-full"><canvas id="predictionChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- AGREGACE STATISTIK -->
+    <section class="bg-zinc-900 border border-cardborder rounded-2xl p-6 shadow-xl">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+        <h2 class="text-lg font-bold">Statistiky a Trendy (Pouze Filip)</h2>
+        <div class="flex gap-2">
+           <select id="metricSelector" onchange="updateMainChart()" class="bg-zinc-950 border border-zinc-700 text-zinc-200 text-xs rounded-lg p-2">
+              <option value="km">Kilometry</option>
+              <option value="xp">Získané XP</option>
+              <option value="hr">Průměrný tep</option>
+           </select>
+           <select id="periodSelector" onchange="updateMainChart()" class="bg-zinc-950 border border-zinc-700 text-zinc-200 text-xs rounded-lg p-2">
+              <option value="day">Po dnech</option>
+              <option value="week">Po týdnech</option>
+              <option value="month">Po měsících</option>
+           </select>
+        </div>
+      </div>
+      <div class="h-64 w-full"><canvas id="mainChart"></canvas></div>
+    </section>
 
     <!-- GLOBÁLNÍ COACH -->
     <footer class="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-emerald-900/40 rounded-2xl p-6 shadow-xl flex gap-4 items-center">
@@ -109,7 +120,10 @@
   <div id="runModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
     <div class="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 max-w-lg w-full shadow-2xl">
       <div class="flex justify-between items-start mb-4">
-        <h2 class="text-xl font-bold text-white" id="mName">--</h2>
+        <div>
+          <h2 class="text-xl font-bold text-white" id="mName">--</h2>
+          <span class="text-xs font-bold text-emerald-400" id="mRunner">--</span>
+        </div>
         <button onclick="document.getElementById('runModal').classList.add('hidden')" class="text-zinc-400 hover:text-white bg-zinc-800 px-2 py-1 rounded">✕</button>
       </div>
       <div class="grid grid-cols-2 gap-4 mb-4">
@@ -119,7 +133,7 @@
         <div class="bg-zinc-950 p-3 rounded-xl"><span class="text-[10px] text-zinc-500 uppercase">Prům. Tep</span><p class="font-bold text-sm text-emerald-400" id="mHr">--</p></div>
       </div>
       <div class="border-t border-zinc-800 pt-3">
-        <span class="text-xs font-bold text-zinc-500">Coach:</span>
+        <span class="text-xs font-bold text-zinc-500">Hodnocení trenéra:</span>
         <p class="text-sm text-zinc-300 italic mt-1" id="mCoach">--</p>
       </div>
     </div>
@@ -127,16 +141,19 @@
 
   <script>
     // ==========================================
-    const API_URL = 'ZDE_VLOZ_SVOU_URL_Z_APPS_SCRIPTU';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwhS4riUeIblELFh0AZ-4Prr3YdUGry6fzRuzjUjRlJXUDMMnm_fAQsWVsqxLhgtI7V/exec';
     // ==========================================
 
     let rawRunsData = [];
+    let runnersMap = {}; // Objekt pro dynamické ukládání běžců
     let filipRuns = [];
-    let partnerRuns = [];
     let myMainChart = null;
     let myPredChart = null;
 
-    // Bezpečný parser čísel (zvládne čárky i tečky ze surového textu)
+    // Paleta barev pro automatické přiřazování dalším běžcům (Filip má vždy Emerald)
+    const colorPalette = ['#10b981', '#06b6d4', '#f59e0b', '#8b5cf6', '#ec4899'];
+    const cssPalette = ['bg-emerald-500', 'bg-cyan-500', 'bg-amber-500', 'bg-purple-500', 'bg-pink-500'];
+
     function parseNum(val) {
       if(!val || val === 'N/A' || val === '') return 0;
       return parseFloat(String(val).replace(',', '.')) || 0;
@@ -152,24 +169,29 @@
         const res = await fetch(API_URL);
         const data = await res.json();
         
-        // Oddělení globálního coache
         const globalMeta = data.find(r => getSafe(r, 'datum') === 'GLOBAL_COACH');
         if(globalMeta) {
           const msg = getSafe(globalMeta, 'zpráva') || getSafe(globalMeta, 'coach');
-          document.getElementById('globalCoachText').innerText = msg !== 'N/A' && msg !== '' ? msg : "Čekám na dostatek dat pro analýzu trendu.";
+          document.getElementById('globalCoachText').innerText = msg !== 'N/A' && msg !== '' ? msg : "Čekám na analýzu trendu.";
         }
 
         rawRunsData = data.filter(r => getSafe(r, 'datum') !== 'N/A' && getSafe(r, 'datum') !== 'GLOBAL_COACH' && getSafe(r, 'datum') !== '');
         
-        filipRuns = rawRunsData.filter(r => String(getSafe(r, 'jméno')||'filip').toLowerCase().includes('filip'));
-        partnerRuns = rawRunsData.filter(r => {
-          let name = String(getSafe(r, 'jméno')||'filip').toLowerCase();
-          return !name.includes('filip') && name !== 'n/a';
+        // Rozřazení běžců do unikátních skupin
+        runnersMap = {};
+        rawRunsData.forEach(r => {
+          let name = String(getSafe(r, 'jméno')||'Filip').trim();
+          name = name.charAt(0).toUpperCase() + name.slice(1); // První velké
+          if(!runnersMap[name]) runnersMap[name] = [];
+          runnersMap[name].push(r);
         });
+
+        filipRuns = runnersMap['Filip'] || [];
 
         updateCardsAndHistory();
         updateMainChart();
         buildPredictionChart();
+        buildRaceTrack();
         
         document.getElementById('syncPulse').classList.replace('bg-amber-500', 'bg-emerald-500');
         document.getElementById('syncStatus').innerHTML = '<span class="text-emerald-400">Data načtena</span>';
@@ -193,27 +215,36 @@
       document.getElementById('xpText').innerText = (xp % 1000) + ' / 1000 XP';
       document.getElementById('xpBar').style.width = ((xp % 1000)/10) + '%';
 
+      // Historie (Smíchaná pro všechny)
       const hist = document.getElementById('historyList');
       hist.innerHTML = '';
-      [...filipRuns].reverse().slice(0, 8).forEach((r, i) => {
-        let runId = filipRuns.length - 1 - i;
+      [...rawRunsData].reverse().slice(0, 8).forEach((r, i) => {
+        let globalIndex = rawRunsData.length - 1 - i;
         let km = parseNum(getSafe(r, 'vzd')).toFixed(2);
+        let name = String(getSafe(r, 'jméno')||'Filip').trim();
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+        let nameColor = name === 'Filip' ? 'text-emerald-400' : 'text-cyan-400';
+
         hist.innerHTML += `
-          <div onclick="openModal(${runId})" class="cursor-pointer flex justify-between bg-zinc-950/80 p-3 rounded-xl border border-zinc-800 hover:border-emerald-500/50">
+          <div onclick="openModal(${globalIndex})" class="cursor-pointer flex justify-between items-center bg-zinc-950/80 p-3 rounded-xl border border-zinc-800 hover:border-emerald-500/50">
             <div>
               <p class="text-xs font-bold text-zinc-300 truncate">${getSafe(r, 'název')}</p>
-              <p class="text-[10px] text-zinc-500">${getSafe(r, 'datum')}</p>
+              <div class="flex gap-2 text-[10px]">
+                <span class="${nameColor} font-bold">${name}</span>
+                <span class="text-zinc-500">${getSafe(r, 'datum')}</span>
+              </div>
             </div>
-            <span class="text-emerald-400 font-black text-sm">${km} km</span>
+            <span class="text-zinc-300 font-black text-sm">${km} km</span>
           </div>`;
       });
     }
 
     function openModal(id) {
-      const r = filipRuns[id];
+      const r = rawRunsData[id];
       document.getElementById('mName').innerText = getSafe(r, 'název');
+      let name = String(getSafe(r, 'jméno')||'Filip').trim();
+      document.getElementById('mRunner').innerText = name.charAt(0).toUpperCase() + name.slice(1);
       document.getElementById('mDate').innerText = getSafe(r, 'datum');
-      // Díky getDisplayValues() teď vypadají tyto údaje přesně jako v tabulce
       document.getElementById('mDistTime').innerText = getSafe(r, 'vzd') + ' km / ' + getSafe(r, 'čas') + ' min';
       document.getElementById('mPace').innerText = getSafe(r, 'tempo') + ' /km';
       document.getElementById('mHr').innerText = getSafe(r, 'tep') + ' bpm';
@@ -221,13 +252,12 @@
       document.getElementById('runModal').classList.remove('hidden');
     }
 
-    // --- LOGIKA AGREGACE (Dny / Týdny / Měsíce) ---
+    // --- AGREGACE PRO HLAVNÍ GRAF ---
     function groupData(runs, period, metric) {
       const grouped = {};
       runs.forEach(r => {
-        // Zpracování českého formátu data "13. 11. 2026"
         let parts = String(getSafe(r, 'datum')).replace(/\s/g, '').split('.');
-        if(parts.length < 3) return; // přeskočí neplatná data
+        if(parts.length < 3) return; 
         
         let d = new Date(parts[2], parts[1] - 1, parts[0]);
         let key = '';
@@ -235,15 +265,13 @@
         if (period === 'day') key = d.toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric'});
         else if (period === 'month') key = d.toLocaleDateString('cs-CZ', {month:'short', year:'numeric'});
         else if (period === 'week') {
-          // Jednoduchý převod na týdny (Po-Ne)
           let firstJan = new Date(d.getFullYear(), 0, 1);
-          let days = Math.floor((d - firstJan) / (24 * 60 * 60 * 1000));
+          let days = Math.floor((d - firstJan) / (86400000));
           let week = Math.ceil((d.getDay() + 1 + days) / 7);
-          key = `Týden ${week}`;
+          key = `Týd. ${week}`;
         }
 
         if(!grouped[key]) grouped[key] = { km:0, xp:0, hrSum:0, count:0 };
-        
         grouped[key].km += parseNum(getSafe(r, 'vzd'));
         grouped[key].xp += parseNum(getSafe(r, 'xp'));
         let tep = parseNum(getSafe(r, 'tep'));
@@ -280,48 +308,48 @@
             borderRadius: 4
           }] 
         },
-        options: { 
-          responsive: true, maintainAspectRatio: false, 
-          plugins: { legend: { display: false } },
-          scales: { y: { min: metric === 'hr' ? 120 : 0 } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: metric === 'hr' ? 120 : 0 } } }
       });
     }
 
-    // --- PREDIKCE (DUEL) ---
-    function calcPred(runs) {
-      return runs.slice(-10).map(r => {
-        let pace = String(getSafe(r, 'tempo')).trim();
-        // Zvládá "6:15" i "6.25"
-        if(pace.includes(':')) {
-           let parts = pace.split(':');
-           let dec = parseInt(parts[0]) + (parseInt(parts[1])/60);
-           return (dec * 10).toFixed(1);
-        } else {
-           return (parseNum(pace) * 10).toFixed(1);
-        }
-      });
-    }
-
+    // --- PREDIKCE KŘIVKY (PRO 3+ BĚŽCŮ) ---
     function buildPredictionChart() {
-      const pFilip = calcPred(filipRuns);
-      const pPartner = calcPred(partnerRuns);
+      let datasets = [];
+      let maxLength = 0;
+      let runnerIndex = 0;
+
+      // Iterujeme přes každého nalezeného běžce
+      Object.keys(runnersMap).forEach(name => {
+        const runs = runnersMap[name].slice(-10); // max 10 posledních běhů do grafu
+        if (runs.length > maxLength) maxLength = runs.length;
+        
+        const preds = runs.map(r => {
+          let pace = String(getSafe(r, 'tempo')).trim();
+          if(pace.includes(':')) {
+             let parts = pace.split(':');
+             return ((parseInt(parts[0]) + (parseInt(parts[1])/60)) * 10).toFixed(1);
+          }
+          return (parseNum(pace) * 10).toFixed(1);
+        });
+
+        datasets.push({
+          label: name,
+          data: preds,
+          borderColor: name === 'Filip' ? colorPalette[0] : colorPalette[(runnerIndex + 1) % colorPalette.length],
+          borderWidth: 3,
+          tension: 0.3
+        });
+        
+        if (name !== 'Filip') runnerIndex++;
+      });
       
-      const maxLength = Math.max(pFilip.length, 10);
+      // Doplnění Ideální křivky
+      maxLength = Math.max(maxLength, 2); // Kvůli dělení nulou u 1 běhu
       const labels = Array.from({length: maxLength}, (_, i) => "Běh " + (i+1));
-      
-      const startMins = 65, goalMins = 45;
+      const startMins = 75, goalMins = 45;
       const idealCurve = labels.map((_, i) => (startMins - ((startMins - goalMins) / (maxLength - 1)) * i).toFixed(1));
 
-      const datasets = [
-        { label: 'Tvůj odhad (min)', data: pFilip, borderColor: '#10b981', borderWidth: 3, tension: 0.3 },
-        { label: 'Ideální křivka', data: idealCurve, borderColor: '#3f3f46', borderDash: [5,5], borderWidth: 2, pointRadius: 0 }
-      ];
-
-      // Přidá křivku parťáka do grafu, pokud existuje
-      if(pPartner.length > 0) {
-        datasets.push({ label: 'Parťákův odhad', data: pPartner, borderColor: '#06b6d4', borderWidth: 3, tension: 0.3 });
-      }
+      datasets.push({ label: 'Ideální křivka (45:00)', data: idealCurve, borderColor: '#3f3f46', borderDash: [5,5], borderWidth: 2, pointRadius: 0 });
 
       const ctx = document.getElementById('predictionChart').getContext('2d');
       if(myPredChart) myPredChart.destroy();
@@ -332,8 +360,49 @@
         options: {
           responsive: true, maintainAspectRatio: false,
           plugins: { legend: { labels: {color: '#a1a1aa'} } },
-          scales: { y: { min: 40, max: 75, grid: {color: '#27272a'}, ticks: {color: '#a1a1aa'} } }
+          scales: { y: { min: 40, max: 80, grid: {color: '#27272a'}, ticks: {color: '#a1a1aa'} } }
         }
+      });
+    }
+
+    // --- ZÁVODNÍ DRÁHA (FYZICKÉ ILUSTROVÁNÍ POZICE) ---
+    function buildRaceTrack() {
+      const track = document.getElementById('raceTrackContainer');
+      track.innerHTML = '';
+      let runnerIndex = 0;
+
+      Object.keys(runnersMap).forEach(name => {
+        const runs = runnersMap[name];
+        if (runs.length === 0) return;
+        
+        // Predikce z úplně posledního běhu
+        const latestRun = runs[runs.length - 1];
+        let pace = String(getSafe(latestRun, 'tempo')).trim();
+        let pred = 0;
+        if(pace.includes(':')) {
+           let parts = pace.split(':');
+           pred = (parseInt(parts[0]) + (parseInt(parts[1])/60)) * 10;
+        } else {
+           pred = parseNum(pace) * 10;
+        }
+        
+        if(pred === 0) return;
+
+        // Start je na 75 minutách (0 %), Cíl je 45 minut (100 %)
+        let progress = ((75 - pred) / (75 - 45)) * 100;
+        progress = Math.max(0, Math.min(100, progress)); // Nesmí vyjet z dráhy
+        
+        const cssColor = name === 'Filip' ? cssPalette[0] : cssPalette[(runnerIndex + 1) % cssPalette.length];
+        const topOffset = (runnerIndex % 3) * 15; // Mírné rozhození výšky, aby se nepřekrývali
+
+        track.innerHTML += `
+          <div class="absolute flex flex-col items-center justify-center transition-all duration-1000 z-10" style="left: ${progress}%; top: ${2 + topOffset}px;">
+             <span class="text-[9px] font-bold text-zinc-300 mb-0.5 bg-zinc-900 px-1 rounded border border-zinc-700 whitespace-nowrap">${name} (${pred.toFixed(1)}')</span>
+             <div class="w-4 h-4 rounded-full ${cssColor} border-2 border-zinc-950 shadow-[0_0_8px_rgba(0,0,0,0.5)]"></div>
+          </div>
+        `;
+        
+        if (name !== 'Filip') runnerIndex++;
       });
     }
 
