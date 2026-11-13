@@ -28,10 +28,10 @@
       <div id="syncStatus" class="text-amber-300 bg-zinc-800 px-4 py-2 rounded-xl text-xs font-semibold mt-4 sm:mt-0">Načítám data...</div>
     </header>
 
-    <!-- HORNÍ GRID: FILIP & HISTORIE -->
+    <!-- HORNÍ GRID -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
-      <!-- Karta Filip (Osobní Stats) -->
+      <!-- Karta Filip -->
       <div class="bg-zinc-900 border border-cardborder rounded-2xl p-6 lg:col-span-1 shadow-xl">
         <h3 class="text-lg font-bold text-emerald-400 mb-4">Hlavní profil: Filip</h3>
         <div class="mb-4">
@@ -55,7 +55,7 @@
         </div>
       </div>
 
-      <!-- Historie (Všichni běžci) -->
+      <!-- Historie -->
       <div class="bg-zinc-900 border border-cardborder rounded-2xl p-6 lg:col-span-2 shadow-xl flex flex-col max-h-[250px]">
         <h2 class="text-sm font-bold uppercase text-zinc-400 mb-3">Poslední aktivity (Všichni běžci)</h2>
         <div id="historyList" class="flex-1 overflow-y-auto space-y-2 pr-2">
@@ -68,20 +68,18 @@
     <section class="bg-zinc-900 border border-cardborder rounded-2xl p-6 shadow-xl">
       <div class="mb-6">
         <h2 class="text-lg font-bold text-amber-400 mb-1">🏁 Závodní dráha (Aktuální forma)</h2>
-        <p class="text-zinc-400 text-xs mb-2">Pozice ukazuje teoretický čas na 10 km z posledního běhu. Cílová páska je 45:00.</p>
+        <p class="text-zinc-400 text-xs mb-2">Pozice ukazuje teoretický čas na 10 km z posledního běhu. Cílová páska je 45 minut.</p>
         
         <!-- CSS Závodní osa -->
-        <div class="relative h-12 bg-zinc-950 rounded-xl border border-zinc-800 overflow-hidden mt-4">
-          <div class="absolute left-0 top-0 bottom-0 w-12 flex items-center justify-center text-[10px] font-bold text-zinc-600 border-r border-zinc-800">Start<br>75'</div>
+        <div class="relative h-16 bg-zinc-950 rounded-xl border border-zinc-800 overflow-hidden mt-4">
+          <div class="absolute left-0 top-0 bottom-0 w-12 flex items-center justify-center text-[10px] font-bold text-zinc-600 border-r border-zinc-800 bg-zinc-900/50">Start<br>75'</div>
           <div class="absolute right-0 top-0 bottom-0 w-12 bg-amber-500/10 border-l-2 border-amber-500 flex items-center justify-center text-[10px] font-bold text-amber-500">CÍL<br>45'</div>
-          <!-- Kontejner pro figurky -->
           <div id="raceTrackContainer" class="absolute left-12 right-12 top-0 bottom-0"></div>
         </div>
       </div>
 
-      <!-- Samotný graf křivek -->
       <div class="pt-4 border-t border-zinc-800">
-        <h2 class="text-sm font-bold text-zinc-300 mb-4">Vývoj predikce v čase (Duel křivek)</h2>
+        <h2 class="text-sm font-bold text-zinc-300 mb-4">Vývoj predikce v čase (Duel křivek za posledních 30 dní)</h2>
         <div class="h-64 w-full"><canvas id="predictionChart"></canvas></div>
       </div>
     </section>
@@ -91,12 +89,12 @@
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
         <h2 class="text-lg font-bold">Statistiky a Trendy (Pouze Filip)</h2>
         <div class="flex gap-2">
-           <select id="metricSelector" onchange="updateMainChart()" class="bg-zinc-950 border border-zinc-700 text-zinc-200 text-xs rounded-lg p-2">
+           <select id="metricSelector" onchange="updateMainChart()" class="bg-zinc-950 border border-zinc-700 text-zinc-200 text-xs rounded-lg p-2 outline-none">
               <option value="km">Kilometry</option>
               <option value="xp">Získané XP</option>
               <option value="hr">Průměrný tep</option>
            </select>
-           <select id="periodSelector" onchange="updateMainChart()" class="bg-zinc-950 border border-zinc-700 text-zinc-200 text-xs rounded-lg p-2">
+           <select id="periodSelector" onchange="updateMainChart()" class="bg-zinc-950 border border-zinc-700 text-zinc-200 text-xs rounded-lg p-2 outline-none">
               <option value="day">Po dnech</option>
               <option value="week">Po týdnech</option>
               <option value="month">Po měsících</option>
@@ -145,14 +143,23 @@
     // ==========================================
 
     let rawRunsData = [];
-    let runnersMap = {}; // Objekt pro dynamické ukládání běžců
+    let runnersMap = {}; 
     let filipRuns = [];
     let myMainChart = null;
     let myPredChart = null;
 
-    // Paleta barev pro automatické přiřazování dalším běžcům (Filip má vždy Emerald)
     const colorPalette = ['#10b981', '#06b6d4', '#f59e0b', '#8b5cf6', '#ec4899'];
     const cssPalette = ['bg-emerald-500', 'bg-cyan-500', 'bg-amber-500', 'bg-purple-500', 'bg-pink-500'];
+
+    // Vylepšený parser dat, který zvládne "YYYY-MM-DD" i "DD.MM.YYYY"
+    function parseDateObj(dateStr) {
+      if(!dateStr || dateStr === 'N/A') return new Date(0);
+      let ds = String(dateStr).trim();
+      if(ds.includes('-')) return new Date(ds);
+      let parts = ds.replace(/\s/g, '').split('.');
+      if(parts.length >= 3) return new Date(parts[2], parts[1]-1, parts[0]);
+      return new Date(ds);
+    }
 
     function parseNum(val) {
       if(!val || val === 'N/A' || val === '') return 0;
@@ -160,7 +167,7 @@
     }
 
     function getSafe(row, keyword) {
-      const key = Object.keys(row).find(k => k.toLowerCase().includes(keyword));
+      const key = Object.keys(row).find(k => k.toLowerCase().includes(keyword.toLowerCase()));
       return key ? row[key] : 'N/A';
     }
 
@@ -177,11 +184,10 @@
 
         rawRunsData = data.filter(r => getSafe(r, 'datum') !== 'N/A' && getSafe(r, 'datum') !== 'GLOBAL_COACH' && getSafe(r, 'datum') !== '');
         
-        // Rozřazení běžců do unikátních skupin
         runnersMap = {};
         rawRunsData.forEach(r => {
           let name = String(getSafe(r, 'jméno')||'Filip').trim();
-          name = name.charAt(0).toUpperCase() + name.slice(1); // První velké
+          name = name.charAt(0).toUpperCase() + name.slice(1);
           if(!runnersMap[name]) runnersMap[name] = [];
           runnersMap[name].push(r);
         });
@@ -215,7 +221,6 @@
       document.getElementById('xpText').innerText = (xp % 1000) + ' / 1000 XP';
       document.getElementById('xpBar').style.width = ((xp % 1000)/10) + '%';
 
-      // Historie (Smíchaná pro všechny)
       const hist = document.getElementById('historyList');
       hist.innerHTML = '';
       [...rawRunsData].reverse().slice(0, 8).forEach((r, i) => {
@@ -224,6 +229,7 @@
         let name = String(getSafe(r, 'jméno')||'Filip').trim();
         name = name.charAt(0).toUpperCase() + name.slice(1);
         let nameColor = name === 'Filip' ? 'text-emerald-400' : 'text-cyan-400';
+        let dFormatted = parseDateObj(getSafe(r, 'datum')).toLocaleDateString('cs-CZ');
 
         hist.innerHTML += `
           <div onclick="openModal(${globalIndex})" class="cursor-pointer flex justify-between items-center bg-zinc-950/80 p-3 rounded-xl border border-zinc-800 hover:border-emerald-500/50">
@@ -231,7 +237,7 @@
               <p class="text-xs font-bold text-zinc-300 truncate">${getSafe(r, 'název')}</p>
               <div class="flex gap-2 text-[10px]">
                 <span class="${nameColor} font-bold">${name}</span>
-                <span class="text-zinc-500">${getSafe(r, 'datum')}</span>
+                <span class="text-zinc-500">${dFormatted}</span>
               </div>
             </div>
             <span class="text-zinc-300 font-black text-sm">${km} km</span>
@@ -244,7 +250,7 @@
       document.getElementById('mName').innerText = getSafe(r, 'název');
       let name = String(getSafe(r, 'jméno')||'Filip').trim();
       document.getElementById('mRunner').innerText = name.charAt(0).toUpperCase() + name.slice(1);
-      document.getElementById('mDate').innerText = getSafe(r, 'datum');
+      document.getElementById('mDate').innerText = parseDateObj(getSafe(r, 'datum')).toLocaleDateString('cs-CZ');
       document.getElementById('mDistTime').innerText = getSafe(r, 'vzd') + ' km / ' + getSafe(r, 'čas') + ' min';
       document.getElementById('mPace').innerText = getSafe(r, 'tempo') + ' /km';
       document.getElementById('mHr').innerText = getSafe(r, 'tep') + ' bpm';
@@ -252,16 +258,13 @@
       document.getElementById('runModal').classList.remove('hidden');
     }
 
-    // --- AGREGACE PRO HLAVNÍ GRAF ---
     function groupData(runs, period, metric) {
       const grouped = {};
       runs.forEach(r => {
-        let parts = String(getSafe(r, 'datum')).replace(/\s/g, '').split('.');
-        if(parts.length < 3) return; 
+        let d = parseDateObj(getSafe(r, 'datum'));
+        if(d.getTime() === 0) return;
         
-        let d = new Date(parts[2], parts[1] - 1, parts[0]);
         let key = '';
-        
         if (period === 'day') key = d.toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric'});
         else if (period === 'month') key = d.toLocaleDateString('cs-CZ', {month:'short', year:'numeric'});
         else if (period === 'week') {
@@ -295,6 +298,8 @@
       const ctx = document.getElementById('mainChart').getContext('2d');
       if(myMainChart) myMainChart.destroy();
       
+      let titleY = metric === 'km' ? 'Vzdálenost (km)' : (metric === 'xp' ? 'Získané XP' : 'Tep (bpm)');
+
       myMainChart = new Chart(ctx, {
         type: metric === 'hr' ? 'line' : 'bar',
         data: { 
@@ -308,46 +313,74 @@
             borderRadius: 4
           }] 
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: metric === 'hr' ? 120 : 0 } } }
+        options: { 
+          responsive: true, maintainAspectRatio: false, 
+          plugins: { legend: { display: false } },
+          scales: { 
+            y: { 
+              min: metric === 'hr' ? 120 : 0,
+              title: { display: true, text: titleY, color: '#a1a1aa', font: { size: 10 } },
+              grid: { color: '#27272a' }, ticks: { color: '#a1a1aa' }
+            },
+            x: { grid: { display: false }, ticks: { color: '#a1a1aa' } }
+          }
+        }
       });
     }
 
-    // --- PREDIKCE KŘIVKY (PRO 3+ BĚŽCŮ) ---
+    // --- PŘEDPOVĚĎ (PŘESNĚ ZA POSLEDNÍ MĚSÍC, OSA X JE DATUM) ---
     function buildPredictionChart() {
+      // Filtr všech běhů na posledních 31 dnů
+      const now = new Date();
+      const monthAgo = new Date(now.getTime() - (31 * 24 * 60 * 60 * 1000));
+      
+      const recentValidRuns = rawRunsData.filter(r => parseDateObj(getSafe(r, 'datum')) >= monthAgo)
+                                         .sort((a,b) => parseDateObj(getSafe(a, 'datum')) - parseDateObj(getSafe(b, 'datum')));
+      
+      // Unikátní data z posledního měsíce pro Osu X
+      let labelsSet = new Set();
+      recentValidRuns.forEach(r => labelsSet.add(parseDateObj(getSafe(r, 'datum')).toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric'})));
+      let labelsArr = [...labelsSet];
+
+      if (labelsArr.length === 0) {
+        labelsArr = ['Žádná data'];
+      }
+
       let datasets = [];
-      let maxLength = 0;
       let runnerIndex = 0;
 
-      // Iterujeme přes každého nalezeného běžce
       Object.keys(runnersMap).forEach(name => {
-        const runs = runnersMap[name].slice(-10); // max 10 posledních běhů do grafu
-        if (runs.length > maxLength) maxLength = runs.length;
-        
-        const preds = runs.map(r => {
-          let pace = String(getSafe(r, 'tempo')).trim();
-          if(pace.includes(':')) {
-             let parts = pace.split(':');
-             return ((parseInt(parts[0]) + (parseInt(parts[1])/60)) * 10).toFixed(1);
+        const runs = runnersMap[name];
+        // Přiřazení hodnot k datům. Pokud běžec ten den neběžel, Chart.js propojí body díky spanGaps
+        let dataPoints = labelsArr.map(label => {
+          let run = runs.find(r => parseDateObj(getSafe(r, 'datum')).toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric'}) === label);
+          if(run) {
+             let pace = String(getSafe(run, 'tempo')).trim();
+             if(pace.includes(':')) {
+                let parts = pace.split(':');
+                return ((parseInt(parts[0]) + (parseInt(parts[1])/60)) * 10).toFixed(1);
+             }
+             return (parseNum(pace) * 10).toFixed(1);
           }
-          return (parseNum(pace) * 10).toFixed(1);
+          return null; 
         });
 
-        datasets.push({
-          label: name,
-          data: preds,
-          borderColor: name === 'Filip' ? colorPalette[0] : colorPalette[(runnerIndex + 1) % colorPalette.length],
-          borderWidth: 3,
-          tension: 0.3
-        });
-        
-        if (name !== 'Filip') runnerIndex++;
+        if(dataPoints.some(dp => dp !== null)) {
+          datasets.push({
+            label: name,
+            data: dataPoints,
+            borderColor: name === 'Filip' ? colorPalette[0] : colorPalette[(runnerIndex + 1) % colorPalette.length],
+            borderWidth: 3,
+            tension: 0.3,
+            spanGaps: true // DŮLEŽITÉ: Spojí křivku i přes dny, kdy parťák neběžel
+          });
+          if (name !== 'Filip') runnerIndex++;
+        }
       });
       
-      // Doplnění Ideální křivky
-      maxLength = Math.max(maxLength, 2); // Kvůli dělení nulou u 1 běhu
-      const labels = Array.from({length: maxLength}, (_, i) => "Běh " + (i+1));
+      // Ideální křivka přes tento měsíc (Klesá ze 75 na 45 plošně)
       const startMins = 75, goalMins = 45;
-      const idealCurve = labels.map((_, i) => (startMins - ((startMins - goalMins) / (maxLength - 1)) * i).toFixed(1));
+      const idealCurve = labelsArr.map((_, i) => (startMins - ((startMins - goalMins) / Math.max(labelsArr.length - 1, 1)) * i).toFixed(1));
 
       datasets.push({ label: 'Ideální křivka (45:00)', data: idealCurve, borderColor: '#3f3f46', borderDash: [5,5], borderWidth: 2, pointRadius: 0 });
 
@@ -356,16 +389,23 @@
       
       myPredChart = new Chart(ctx, {
         type: 'line',
-        data: { labels: labels, datasets: datasets },
+        data: { labels: labelsArr, datasets: datasets },
         options: {
           responsive: true, maintainAspectRatio: false,
           plugins: { legend: { labels: {color: '#a1a1aa'} } },
-          scales: { y: { min: 40, max: 80, grid: {color: '#27272a'}, ticks: {color: '#a1a1aa'} } }
+          scales: { 
+            y: { 
+              min: 40, max: 80, 
+              title: { display: true, text: 'Čas na 10 km (minuty)', color: '#a1a1aa', font: { size: 10 } },
+              grid: {color: '#27272a'}, ticks: {color: '#a1a1aa'} 
+            },
+            x: { grid: { color: '#27272a', drawBorder: false }, ticks: { color: '#a1a1aa' } }
+          }
         }
       });
     }
 
-    // --- ZÁVODNÍ DRÁHA (FYZICKÉ ILUSTROVÁNÍ POZICE) ---
+    // --- ZÁVODNÍ DRÁHA (S BĚŽCI MÍSTO TEČEK) ---
     function buildRaceTrack() {
       const track = document.getElementById('raceTrackContainer');
       track.innerHTML = '';
@@ -375,7 +415,6 @@
         const runs = runnersMap[name];
         if (runs.length === 0) return;
         
-        // Predikce z úplně posledního běhu
         const latestRun = runs[runs.length - 1];
         let pace = String(getSafe(latestRun, 'tempo')).trim();
         let pred = 0;
@@ -388,17 +427,17 @@
         
         if(pred === 0) return;
 
-        // Start je na 75 minutách (0 %), Cíl je 45 minut (100 %)
         let progress = ((75 - pred) / (75 - 45)) * 100;
-        progress = Math.max(0, Math.min(100, progress)); // Nesmí vyjet z dráhy
+        progress = Math.max(0, Math.min(100, progress)); 
         
         const cssColor = name === 'Filip' ? cssPalette[0] : cssPalette[(runnerIndex + 1) % cssPalette.length];
-        const topOffset = (runnerIndex % 3) * 15; // Mírné rozhození výšky, aby se nepřekrývali
+        const topOffset = (runnerIndex % 3) * 10; 
 
+        // AVATAR BĚŽCE MÍSTO TEČKY
         track.innerHTML += `
-          <div class="absolute flex flex-col items-center justify-center transition-all duration-1000 z-10" style="left: ${progress}%; top: ${2 + topOffset}px;">
-             <span class="text-[9px] font-bold text-zinc-300 mb-0.5 bg-zinc-900 px-1 rounded border border-zinc-700 whitespace-nowrap">${name} (${pred.toFixed(1)}')</span>
-             <div class="w-4 h-4 rounded-full ${cssColor} border-2 border-zinc-950 shadow-[0_0_8px_rgba(0,0,0,0.5)]"></div>
+          <div class="absolute flex flex-col items-center justify-center transition-all duration-1000 z-10 -ml-4" style="left: ${progress}%; top: ${2 + topOffset}px;">
+             <span class="text-[9px] font-bold text-zinc-300 mb-0.5 bg-zinc-900/80 px-1 rounded border border-zinc-700 whitespace-nowrap">${name} (${pred.toFixed(1)}')</span>
+             <div class="w-8 h-8 rounded-full ${cssColor} flex items-center justify-center border-2 border-zinc-950 shadow-lg text-lg">🏃</div>
           </div>
         `;
         
