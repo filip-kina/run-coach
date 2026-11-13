@@ -15,9 +15,9 @@
     }
   </script>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen p-4 sm:p-6 lg:p-8 font-sans antialiased selection:bg-emerald-500 selection:text-black">
+<body class="bg-zinc-950 text-zinc-100 min-h-screen p-4 sm:p-6 lg:p-8 font-sans antialiased selection:bg-emerald-500 selection:text-black relative">
 
-  <div class="max-w-6xl mx-auto space-y-6">
+  <div class="max-w-7xl mx-auto space-y-6">
 
     <!-- HLAVIČKA -->
     <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-zinc-900 border border-cardborder rounded-2xl p-6 shadow-2xl">
@@ -26,122 +26,179 @@
           <span id="syncPulse" class="inline-block w-3 h-3 rounded-full bg-amber-500 animate-pulse"></span>
           <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Běžecký Hub</h1>
         </div>
-        <p class="text-zinc-400 text-sm mt-1">Mise: 10 km pod 45:00 • Ochrana aorty (Zóna 2) & Biomechanika (Achillovka)</p>
+        <p class="text-zinc-400 text-sm mt-1">Cíl: 10 km pod 45:00 (Březen 2027) • Ochrana aorty & Achillovky</p>
       </div>
       <div id="syncStatus" class="mt-4 sm:mt-0 flex items-center space-x-2 bg-zinc-800 border border-zinc-700 px-4 py-2 rounded-xl text-xs font-semibold text-amber-300 transition-colors duration-500">
-        Načítám data ze Stravy...
+        Načítám data...
       </div>
     </header>
 
-    <!-- BĚŽCI GRID -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- BĚŽCI GRID & DUEL -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
       <!-- FILIP KARTA -->
-      <div id="filipCard" class="bg-zinc-900 border border-cardborder rounded-2xl p-6 space-y-4 shadow-xl transition-colors duration-500">
+      <div id="filipCard" class="bg-zinc-900 border border-cardborder rounded-2xl p-6 space-y-4 shadow-xl lg:col-span-1">
         <div class="flex justify-between items-start">
-          <div>
-            <div class="flex items-center space-x-2">
-              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Hlavní profil</span>
-              <h3 class="text-lg font-bold">Filip</h3>
-            </div>
+          <div class="flex items-center space-x-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Filip</span>
           </div>
-          <span id="rankBadge" class="inline-flex items-center px-2 py-1 rounded-md text-xs font-bold bg-purple-900/30 text-purple-400 border border-purple-800/40">
+          <span id="rankBadge" class="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold bg-purple-900/30 text-purple-400 border border-purple-800/40">
             🏆 Titul: Zjišťuji...
           </span>
         </div>
 
         <div>
           <div class="flex justify-between text-xs font-semibold mb-1">
-            <span class="text-zinc-400" id="levelText">Level: Načítám...</span>
+            <span class="text-zinc-400" id="levelText">Level: --</span>
             <span class="text-emerald-400 font-bold" id="xpText">-- / 1 000 XP</span>
           </div>
-          <div class="w-full bg-zinc-800 rounded-full h-3 overflow-hidden border border-zinc-700 relative">
+          <div class="w-full bg-zinc-800 rounded-full h-3 overflow-hidden border border-zinc-700">
             <div id="xpBar" class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-full rounded-full transition-all duration-1000" style="width: 0%;"></div>
           </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-800 text-center">
+        <div class="grid grid-cols-2 gap-2 pt-2 text-center">
           <div class="p-2 bg-zinc-950 rounded-xl border border-zinc-800/80">
-            <span class="text-[10px] text-zinc-500 uppercase font-semibold">Celkem km</span>
-            <p class="text-base font-bold text-zinc-200" id="totalKm">-- km</p>
-          </div>
-          <div class="p-2 bg-zinc-950 rounded-xl border border-zinc-800/80 relative overflow-hidden group">
             <span class="text-[10px] text-zinc-500 uppercase font-semibold">Tep (poslední)</span>
-            <p class="text-base font-bold text-emerald-400 transition-colors duration-300" id="latestHr">-- bpm</p>
+            <p class="text-lg font-bold text-emerald-400" id="latestHr">--</p>
           </div>
-          <div class="p-2 bg-zinc-950 rounded-xl border border-zinc-800/80 relative overflow-hidden">
+          <div class="p-2 bg-zinc-950 rounded-xl border border-zinc-800/80">
             <span class="text-[10px] text-zinc-500 uppercase font-semibold">Kadence</span>
-            <p class="text-base font-bold text-zinc-200 transition-colors duration-300" id="latestCadence">-- spm</p>
+            <p class="text-lg font-bold text-zinc-200" id="latestCadence">--</p>
           </div>
-        </div>
-        
-        <!-- Vizuální varování Achillovky (Zobrazí se jen při problému) -->
-        <div id="achillesWarning" class="hidden p-3 bg-red-950/40 rounded-xl border border-red-900/50 flex items-start space-x-2 text-xs">
-          <span class="text-red-400 font-bold">🚨 Achillův alarm:</span>
-          <span class="text-zinc-300">Kadence spadla pod 165! Tím prodlužuješ dobu dopadu a ničíš jizvu. Příště zkrať krok!</span>
         </div>
       </div>
 
-      <!-- HISTORIE BĚHŮ V KOSTCE -->
-      <div class="bg-zinc-900 border border-cardborder rounded-2xl p-6 shadow-xl flex flex-col">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-bold">Historie běhů v kostce</h2>
-          <span class="text-xs text-zinc-500">Posledních 5 aktivit</span>
+      <!-- SROVNÁNÍ / PARŤÁK -->
+      <div class="bg-zinc-900 border border-cardborder rounded-2xl p-6 shadow-xl lg:col-span-1 flex flex-col justify-center relative overflow-hidden" id="partnerCard">
+        <div id="partnerPlaceholder" class="text-center">
+          <svg class="w-10 h-10 mx-auto mb-2 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          <span class="block font-bold text-zinc-400">Čekám na Parťáka</span>
+          <span class="text-xs text-zinc-600 mt-1 block">Až se v tabulce objeví další běžec, spustí se štafetový duel!</span>
         </div>
-        <div id="historyList" class="flex-1 overflow-y-auto pr-2 space-y-3">
-          <!-- Zde se JS kódem vloží seznam -->
-          <div class="text-center text-zinc-500 text-sm mt-10 animate-pulse">Načítám historii...</div>
+        
+        <!-- Skryté dokud není parťák -->
+        <div id="partnerStats" class="hidden space-y-4 w-full">
+          <div class="text-center mb-4">
+            <h3 class="text-lg font-bold text-cyan-400">🔥 Štafetový Duel 🔥</h3>
+          </div>
+          
+          <div>
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span class="text-emerald-400">Filip (<span id="duelFilipKm">0</span> km)</span>
+              <span class="text-cyan-400">Parťák (<span id="duelPartnerKm">0</span> km)</span>
+            </div>
+            <div class="w-full bg-zinc-800 rounded-full h-4 flex overflow-hidden border border-zinc-700">
+              <div id="duelBarFilip" class="bg-emerald-500 h-full transition-all duration-1000" style="width: 50%;"></div>
+              <div id="duelBarPartner" class="bg-cyan-500 h-full transition-all duration-1000" style="width: 50%;"></div>
+            </div>
+          </div>
+          <div class="text-center text-xs text-zinc-400 mt-2">Kdo naběhá víc kilometrů do štafety?</div>
+        </div>
+      </div>
+
+      <!-- HISTORIE BĚHŮ -->
+      <div class="bg-zinc-900 border border-cardborder rounded-2xl p-6 shadow-xl lg:col-span-1 flex flex-col max-h-[250px]">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-sm font-bold uppercase text-zinc-400">Poslední aktivity</h2>
+          <span class="text-[10px] text-zinc-500 bg-zinc-800 px-2 py-1 rounded">Klikni pro detail</span>
+        </div>
+        <div id="historyList" class="flex-1 overflow-y-auto pr-2 space-y-2 custom-scrollbar">
+          <div class="text-center text-zinc-600 text-sm mt-8 animate-pulse">Načítám...</div>
         </div>
       </div>
     </div>
 
-    <!-- INTERAKTIVNÍ GRAF -->
-    <section class="bg-zinc-900 border border-cardborder rounded-2xl p-6 shadow-xl">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-        <div>
-          <h2 class="text-lg font-bold">Statistiky tréninku (Posledních 10 běhů)</h2>
+    <!-- GRAFY (PREDIKCE & STATISTIKY) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- PREDIKCE 10 KM -->
+      <section class="bg-zinc-900 border border-cardborder rounded-2xl p-6 shadow-xl">
+        <div class="mb-4">
+          <h2 class="text-lg font-bold text-amber-400">📈 Predikce závodu na 10 km</h2>
+          <p class="text-zinc-400 text-xs mt-0.5">Tvůj teoretický čas vs. Ideální křivka (cíl 45:00)</p>
         </div>
-        <div class="mt-4 sm:mt-0 w-full sm:w-auto">
-          <select id="chartSelector" onchange="updateChart()" class="w-full sm:w-auto bg-zinc-950 border border-zinc-700 text-zinc-200 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block p-2.5 outline-none font-semibold">
-            <option value="km">Počet kilometrů</option>
+        <div class="h-64 w-full">
+          <canvas id="predictionChart"></canvas>
+        </div>
+      </section>
+
+      <!-- BĚŽNÉ STATISTIKY -->
+      <section class="bg-zinc-900 border border-cardborder rounded-2xl p-6 shadow-xl">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold">Objemy a XP</h2>
+          <select id="chartSelector" onchange="updateMainChart()" class="bg-zinc-950 border border-zinc-700 text-zinc-200 text-xs rounded-lg p-2 outline-none">
+            <option value="km">Kilometry</option>
             <option value="xp">Získané XP</option>
-            <option value="hr">Průměrný tep</option>
           </select>
         </div>
-      </div>
-      <div class="h-64 w-full">
-        <canvas id="interactiveChart"></canvas>
-      </div>
-    </section>
-
-    <!-- TRENÉRSKÝ RADAR (AI COACH) -->
-    <footer id="coachFooter" class="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-emerald-900/40 rounded-2xl p-6 shadow-xl flex items-start space-x-4 transition-colors duration-500">
-      <div id="coachEmoji" class="text-3xl shrink-0 mt-1 select-none">
-        🤖
-      </div>
-      <div>
-        <div class="flex items-center space-x-2">
-          <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-400">Live AI Coach Report</h3>
-          <span id="coachMoodBadge" class="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-zinc-800 text-zinc-500">Čekám na data</span>
+        <div class="h-64 w-full">
+          <canvas id="mainChart"></canvas>
         </div>
-        <p id="coachMessageText" class="text-zinc-200 text-sm mt-2 leading-relaxed font-medium italic border-l-2 border-zinc-700 pl-3">
-          Skenuji tvůj poslední běh...
+      </section>
+
+    </div>
+
+    <!-- GLOBÁLNÍ TRENÉRSKÝ RADAR -->
+    <footer class="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-emerald-900/40 rounded-2xl p-6 shadow-xl flex items-start space-x-4">
+      <div class="text-4xl shrink-0 mt-1">🧠</div>
+      <div class="w-full">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">Hodnocení celkového vývoje (AI Coach)</h3>
+        <p id="globalCoachText" class="text-zinc-200 text-sm mt-2 leading-relaxed font-medium border-l-2 border-emerald-700 pl-3">
+          Čekám na analýzu dlouhodobého trendu ze tvé tabulky...
         </p>
       </div>
     </footer>
 
   </div>
 
+  <!-- MODAL OKNO PRO DETAIL BĚHU -->
+  <div id="runModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 max-w-lg w-full shadow-2xl transform scale-95 transition-transform duration-300" id="modalContent">
+      <div class="flex justify-between items-start mb-4">
+        <h2 class="text-xl font-bold text-white" id="mName">Název běhu</h2>
+        <button onclick="closeModal()" class="text-zinc-400 hover:text-white bg-zinc-800 p-1 rounded-lg">✕</button>
+      </div>
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+          <span class="text-[10px] text-zinc-500 uppercase block">Datum</span>
+          <span class="font-bold text-sm text-zinc-300" id="mDate">--</span>
+        </div>
+        <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+          <span class="text-[10px] text-zinc-500 uppercase block">Vzdálenost & Čas</span>
+          <span class="font-bold text-sm text-cyan-400" id="mDistTime">--</span>
+        </div>
+        <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+          <span class="text-[10px] text-zinc-500 uppercase block">Tempo</span>
+          <span class="font-bold text-sm text-zinc-300" id="mPace">-- /km</span>
+        </div>
+        <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+          <span class="text-[10px] text-zinc-500 uppercase block">Prům. Tep</span>
+          <span class="font-bold text-sm text-emerald-400" id="mHr">-- bpm</span>
+        </div>
+      </div>
+      <div class="border-t border-zinc-800 pt-4">
+        <h3 class="text-xs font-bold uppercase text-zinc-500 mb-2">Hodnocení tohoto tréninku:</h3>
+        <p class="text-sm text-zinc-300 italic" id="mCoach">Zpráva od coache...</p>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+  </style>
+
   <script>
     // ==========================================
-    // SEM VLOŽ URL SVÉ WEBOVÉ APLIKACE (Krok 1)
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwhS4riUeIblELFh0AZ-4Prr3YdUGry6fzRuzjUjRlJXUDMMnm_fAQsWVsqxLhgtI7V/exec';
+    const API_URL = 'ZDE_VLOZ_SVOU_URL_Z_APPS_SCRIPTU';
     // ==========================================
 
-    let chartDataSets = {};
-    let myChart = null;
+    let myMainChart = null;
+    let myPredChart = null;
+    let globalRunsData = [];
 
-    // Pomocná funkce pro bezpečné nalezení sloupce podle částečného názvu
     function getSafeValue(rowObj, keyword) {
       const key = Object.keys(rowObj).find(k => k.toLowerCase().includes(keyword.toLowerCase()));
       return key ? rowObj[key] : 'N/A';
@@ -150,171 +207,210 @@
     async function fetchData() {
       try {
         const response = await fetch(API_URL);
-        const data = await response.json();
+        const rawData = await response.json();
         
-        if(data && data.length > 0) {
-          processRunData(data);
-          
+        // Zpracování dat (počítáme s tím, že z tabulky může přijít i buňka s Globálním hodnocením - vysvětleno v Kroku 2)
+        // Vyfiltrujeme jen opravdové běhy (mají datum)
+        globalRunsData = rawData.filter(r => getSafeValue(r, 'datum') !== 'N/A' && getSafeValue(r, 'datum') !== '');
+        
+        // Hledáme Globální zprávu (pokud ji Apps script poslal jako speciální řádek nebo parametr)
+        const globalMeta = rawData.find(r => getSafeValue(r, 'datum') === 'GLOBAL_COACH');
+        if(globalMeta) {
+           document.getElementById('globalCoachText').innerText = getSafeValue(globalMeta, 'zpráva') || getSafeValue(globalMeta, 'coach');
+        }
+
+        if(globalRunsData.length > 0) {
+          processRunData(globalRunsData);
           document.getElementById('syncPulse').classList.replace('bg-amber-500', 'bg-emerald-500');
-          const statusEl = document.getElementById('syncStatus');
-          statusEl.classList.replace('text-amber-300', 'text-emerald-400');
-          statusEl.innerHTML = `<svg class="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Live Data Synchronizována`;
+          document.getElementById('syncStatus').innerHTML = `<span class="text-emerald-400">Live Data Synchronizována</span>`;
         }
       } catch (error) {
-        console.error("Chyba:", error);
-        document.getElementById('coachMessageText').innerText = "Nepodařilo se připojit k databázi. Zkontroluj odkaz na API.";
+        console.log(error);
+        document.getElementById('globalCoachText').innerText = "Chyba připojení k tabulce.";
       }
     }
 
-    function getRankTitle(level) {
-      if(level < 3) return "Gaučový brambor 🥔";
-      if(level < 6) return "Asfaltový Drtič 👟";
-      if(level < 10) return "Hobík se snem 🏃‍♂️";
-      if(level < 15) return "Strojovna na Zónu 2 🚂";
-      return "Lokální Keňan 🥇";
+    // PŘEVOD TEMPA (např "6:15") na minuty v desetinném čísle pro grafy (6.25)
+    function paceToDecimal(paceStr) {
+      if(!paceStr || paceStr === 'N/A') return 0;
+      let parts = String(paceStr).split(':');
+      if(parts.length !== 2) return 0;
+      return parseInt(parts[0]) + (parseInt(parts[1]) / 60);
     }
 
     function processRunData(data) {
-      let totalXp = 0;
-      let totalKm = 0;
+      // 1. Rozdělení na Filipa a případného parťáka
+      // Hledáme sloupec "Jméno" nebo "Běžec", pokud neexistuje, všichni jsou Filip
+      const filipRuns = data.filter(r => {
+        let name = String(getSafeValue(r, 'jméno') || getSafeValue(r, 'běžec') || 'Filip').toLowerCase();
+        return name.includes('filip');
+      });
       
-      data.forEach(run => {
+      const partnerRuns = data.filter(r => {
+        let name = String(getSafeValue(r, 'jméno') || getSafeValue(r, 'běžec') || 'Filip').toLowerCase();
+        return !name.includes('filip') && name !== 'n/a';
+      });
+
+      // Zpracování Filipa
+      let totalXp = 0, totalKm = 0;
+      filipRuns.forEach(run => {
         totalXp += Number(getSafeValue(run, 'xp')) || 0;
         totalKm += Number(getSafeValue(run, 'vzd')) || 0;
       });
 
-      const latestRun = data[data.length - 1];
-      const hr = Math.round(Number(getSafeValue(latestRun, 'tep')));
-      const cad = Math.round(Number(getSafeValue(latestRun, 'kadence')));
-      const latestCoach = getSafeValue(latestRun, 'coach') || getSafeValue(latestRun, 'zpráva');
+      if(filipRuns.length > 0) {
+        const latest = filipRuns[filipRuns.length - 1];
+        document.getElementById('latestHr').innerText = getSafeValue(latest, 'tep') + ' bpm';
+        document.getElementById('latestCadence').innerText = getSafeValue(latest, 'kadence') + ' spm';
+        if(Number(getSafeValue(latest, 'tep')) > 150) document.getElementById('latestHr').classList.replace('text-emerald-400', 'text-red-500');
+      }
 
-      // Update Card Stats
-      document.getElementById('totalKm').innerText = totalKm.toFixed(1) + ' km';
-      const hrEl = document.getElementById('latestHr');
-      hrEl.innerText = (isNaN(hr) ? 'N/A' : hr) + ' bpm';
-      
-      const cadEl = document.getElementById('latestCadence');
-      cadEl.innerText = (isNaN(cad) ? 'N/A' : cad) + ' spm';
-      
-      // XP & Level
       let level = Math.floor(totalXp / 1000) + 1;
-      let currentLevelXp = totalXp % 1000;
-      
-      document.getElementById('rankBadge').innerText = getRankTitle(level);
       document.getElementById('levelText').innerText = 'Level ' + level;
-      document.getElementById('xpText').innerText = currentLevelXp + ' / 1 000 XP';
-      document.getElementById('xpBar').style.width = (currentLevelXp / 1000) * 100 + '%';
-
-      // --- LOGIKA VYCHYTÁVEK ---
+      document.getElementById('xpText').innerText = (totalXp % 1000) + ' / 1000 XP';
+      document.getElementById('xpBar').style.width = ((totalXp % 1000) / 1000) * 100 + '%';
       
-      // 1. Trenérova nálada podle tepu
-      const coachFooter = document.getElementById('coachFooter');
-      const coachEmoji = document.getElementById('coachEmoji');
-      const coachBadge = document.getElementById('coachMoodBadge');
+      const ranks = ["Gaučový brambor", "Asfaltový Drtič", "Hobík se snem", "Strojovna", "Lokální Keňan"];
+      document.getElementById('rankBadge').innerText = "🏆 " + ranks[Math.min(level, 5)-1];
 
-      if (!isNaN(hr) && hr > 150) {
-        hrEl.classList.replace('text-emerald-400', 'text-red-500');
-        coachFooter.classList.replace('border-emerald-900/40', 'border-red-900/60');
-        coachEmoji.innerText = '🤬';
-        coachBadge.innerText = 'Smažíš si aortu!';
-        coachBadge.className = 'px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-red-900/50 text-red-400';
-      } else {
-        coachEmoji.innerText = '😎';
-        coachBadge.innerText = 'Klidná síla, srdce vrní';
-        coachBadge.className = 'px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-emerald-900/50 text-emerald-400';
+      // Zpracování Parťáka (Duel)
+      if(partnerRuns.length > 0) {
+        document.getElementById('partnerPlaceholder').classList.add('hidden');
+        document.getElementById('partnerStats').classList.remove('hidden');
+        
+        let pKm = 0;
+        partnerRuns.forEach(r => pKm += Number(getSafeValue(r, 'vzd')) || 0);
+        
+        document.getElementById('duelFilipKm').innerText = totalKm.toFixed(1);
+        document.getElementById('duelPartnerKm').innerText = pKm.toFixed(1);
+        
+        let totalDuel = totalKm + pKm;
+        document.getElementById('duelBarFilip').style.width = (totalKm / totalDuel * 100) + '%';
+        document.getElementById('duelBarPartner').style.width = (pKm / totalDuel * 100) + '%';
       }
 
-      // 2. Achillův alarm
-      if (!isNaN(cad) && cad < 165) {
-        cadEl.classList.replace('text-zinc-200', 'text-amber-500');
-        document.getElementById('achillesWarning').classList.remove('hidden');
-        document.getElementById('filipCard').classList.add('border-amber-900/50');
-      }
-
-      // 3. AI Zpráva
-      document.getElementById('coachMessageText').innerText = latestCoach !== 'N/A' ? `"${latestCoach}"` : "Dnes bez komentáře. Trenér si dává kafe.";
-
-      // 4. Historie v kostce (posledních 5 běhů)
+      // Historie List
       const historyList = document.getElementById('historyList');
       historyList.innerHTML = '';
-      const last5 = data.slice(-5).reverse();
-      
-      last5.forEach(run => {
-        let d = new Date(getSafeValue(run, 'datum'));
-        let dateStr = d.toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric'});
-        let runName = getSafeValue(run, 'název') || getSafeValue(run, 'nazev') || 'Trénink';
-        let runKm = getSafeValue(run, 'vzd');
-        let runTempo = getSafeValue(run, 'tempo');
-        let runHr = Math.round(Number(getSafeValue(run, 'tep')));
+      [...filipRuns].reverse().slice(0, 8).forEach((run, index) => {
+        let d = new Date(getSafeValue(run, 'datum')).toLocaleDateString('cs-CZ');
+        let km = getSafeValue(run, 'vzd');
+        // Přidáme id pro modal
+        let runId = filipRuns.length - 1 - index; 
         
-        let hrBadge = (!isNaN(runHr) && runHr > 150) ? `<span class="text-red-400 ml-2">❤️ ${runHr}</span>` : `<span class="text-emerald-400 ml-2">💚 ${runHr}</span>`;
-
         historyList.innerHTML += `
-          <div class="flex justify-between items-center bg-zinc-950/50 p-3 rounded-xl border border-zinc-800 hover:border-zinc-700 transition">
+          <div onclick="openModal(${runId})" class="cursor-pointer flex justify-between items-center bg-zinc-950/80 p-2.5 rounded-xl border border-zinc-800 hover:border-emerald-500/50 hover:bg-zinc-900 transition">
             <div>
-              <p class="text-sm font-bold text-zinc-200 truncate max-w-[150px] sm:max-w-[200px]">${runName}</p>
-              <p class="text-[10px] text-zinc-500">${dateStr} • ${runTempo} /km</p>
+              <p class="text-xs font-bold text-zinc-300 truncate w-32">${getSafeValue(run, 'název') || 'Běh'}</p>
+              <p class="text-[9px] text-zinc-500">${d}</p>
             </div>
-            <div class="text-right flex flex-col items-end">
-              <span class="font-black text-zinc-300 text-sm">${runKm} km</span>
-              <span class="text-[10px]">${hrBadge}</span>
-            </div>
+            <span class="font-black text-emerald-400 text-sm">${km} km</span>
           </div>
         `;
       });
 
-      // Příprava dat pro graf
-      const recentRuns = data.slice(-10);
-      const labels = recentRuns.map(r => {
-        let d = new Date(getSafeValue(r, 'datum'));
-        return d.toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric'});
-      });
-
-      chartDataSets = {
-        km: { label: 'Kilometry', data: recentRuns.map(r => getSafeValue(r, 'vzd')), borderColor: '#22d3ee', backgroundColor: 'rgba(34, 211, 238, 0.1)' },
-        xp: { label: 'Získané XP', data: recentRuns.map(r => getSafeValue(r, 'xp')), borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)' },
-        hr: { label: 'Průměrný tep', data: recentRuns.map(r => getSafeValue(r, 'tep')), borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)' }
-      };
-
-      initChart(labels);
+      buildMainChart(filipRuns);
+      buildPredictionChart(filipRuns);
     }
 
-    function initChart(labels) {
-      const ctx = document.getElementById('interactiveChart').getContext('2d');
-      myChart = new Chart(ctx, {
+    // MODAL LOGIKA
+    function openModal(runIndex) {
+      const filipRuns = globalRunsData.filter(r => String(getSafeValue(r, 'jméno')||'Filip').toLowerCase().includes('filip'));
+      const run = filipRuns[runIndex];
+      
+      document.getElementById('mName').innerText = getSafeValue(run, 'název') || 'Trénink';
+      document.getElementById('mDate').innerText = new Date(getSafeValue(run, 'datum')).toLocaleDateString('cs-CZ');
+      document.getElementById('mDistTime').innerText = getSafeValue(run, 'vzd') + ' km / ' + getSafeValue(run, 'čas') + ' min';
+      document.getElementById('mPace').innerText = getSafeValue(run, 'tempo');
+      document.getElementById('mHr').innerText = getSafeValue(run, 'tep');
+      document.getElementById('mCoach').innerText = getSafeValue(run, 'coach') || getSafeValue(run, 'zpráva') || 'Bez komentáře.';
+      
+      const modal = document.getElementById('runModal');
+      const content = document.getElementById('modalContent');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        content.classList.remove('scale-95');
+      }, 10);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('runModal');
+      const content = document.getElementById('modalContent');
+      modal.classList.add('opacity-0');
+      content.classList.add('scale-95');
+      setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+
+    // GRAFY
+    function buildMainChart(runs) {
+      const recent = runs.slice(-10);
+      const labels = recent.map(r => new Date(getSafeValue(r, 'datum')).toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric'}));
+      
+      const ctx = document.getElementById('mainChart').getContext('2d');
+      if(myMainChart) myMainChart.destroy();
+      
+      myMainChart = new Chart(ctx, {
         type: 'bar',
-        data: { labels: labels, datasets: [{ label: '', data: [], borderRadius: 4 }] },
+        data: { 
+          labels: labels, 
+          datasets: [{ 
+            data: recent.map(r => getSafeValue(r, 'vzd')), 
+            backgroundColor: '#22d3ee', borderRadius: 4 
+          }] 
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x:{grid:{display:false}} } }
+      });
+    }
+
+    function updateMainChart() {
+      const runs = globalRunsData.filter(r => String(getSafeValue(r, 'jméno')||'Filip').toLowerCase().includes('filip')).slice(-10);
+      const sel = document.getElementById('chartSelector').value;
+      if(sel === 'km') {
+        myMainChart.data.datasets[0].data = runs.map(r => getSafeValue(r, 'vzd'));
+        myMainChart.data.datasets[0].backgroundColor = '#22d3ee';
+      } else {
+        myMainChart.data.datasets[0].data = runs.map(r => getSafeValue(r, 'xp'));
+        myMainChart.data.datasets[0].backgroundColor = '#10b981';
+      }
+      myMainChart.update();
+    }
+
+    function buildPredictionChart(runs) {
+      // Logika predikce na 10k:
+      // Pokud běžíš 6:00 / km, 10k zabere 60 min.
+      // Spočítáme teoretický čas na 10k pro posledních 10 běhů
+      const recent = runs.slice(-10);
+      const labels = recent.map((r,i) => "Běh " + (i+1));
+      
+      // Skutečná predikce (Tempo * 10)
+      const actualPrediction = recent.map(r => {
+        let decPace = paceToDecimal(getSafeValue(r, 'tempo'));
+        return decPace > 0 ? (decPace * 10).toFixed(1) : null;
+      });
+
+      // Ideální klesající křivka (např. začala na 65 minutách, končí na 45)
+      const startMins = 65; const goalMins = 45;
+      const idealCurve = labels.map((_, i) => (startMins - ((startMins - goalMins) / (labels.length - 1)) * i).toFixed(1));
+
+      const ctx = document.getElementById('predictionChart').getContext('2d');
+      if(myPredChart) myPredChart.destroy();
+      
+      myPredChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Tvůj odhad na 10k (min)', data: actualPrediction, borderColor: '#f59e0b', borderWidth: 3, tension: 0.3 },
+            { label: 'Ideální křivka k 45:00', data: idealCurve, borderColor: '#3f3f46', borderDash: [5,5], borderWidth: 2, pointRadius: 0 }
+          ]
+        },
         options: {
           responsive: true, maintainAspectRatio: false,
-          scales: { y: { grid: { color: '#27272a' }, ticks: { color: '#a1a1aa' } }, x: { grid: { display: false }, ticks: { color: '#a1a1aa' } } },
-          plugins: { legend: { display: false } }
+          plugins: { legend: { labels: {color: '#a1a1aa'} } },
+          scales: { y: { min: 40, max: 75, grid: {color: '#27272a'}, ticks: {color: '#a1a1aa'} }, x: {display: false} }
         }
       });
-      updateChart();
-    }
-
-    function updateChart() {
-      if(!myChart) return;
-      const sel = document.getElementById('chartSelector').value;
-      const d = chartDataSets[sel];
-      
-      myChart.config.type = (sel === 'hr') ? 'line' : 'bar';
-      myChart.data.datasets[0].label = d.label;
-      myChart.data.datasets[0].data = d.data;
-      myChart.data.datasets[0].backgroundColor = (sel === 'hr') ? d.backgroundColor : d.borderColor;
-      myChart.data.datasets[0].borderColor = d.borderColor;
-      myChart.data.datasets[0].borderWidth = (sel === 'hr') ? 3 : 0;
-      myChart.data.datasets[0].fill = (sel === 'hr');
-      myChart.data.datasets[0].tension = 0.3;
-      
-      if(sel === 'hr') {
-        myChart.options.scales.y.min = 120;
-        myChart.options.scales.y.beginAtZero = false;
-      } else {
-        myChart.options.scales.y.min = undefined;
-        myChart.options.scales.y.beginAtZero = true;
-      }
-      myChart.update();
     }
 
     window.onload = fetchData;
